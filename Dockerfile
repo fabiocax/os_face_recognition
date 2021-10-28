@@ -1,22 +1,42 @@
-FROM centos:8
-ENV PYTHONUNBUFFERED=1
-WORKDIR /app
-COPY requirements.txt /app/
-RUN yum install -y gcc-c++ cmake
-RUN yum install -y python3 python3-pip
-RUN yum install -y python3-devel make libXext libSM libXrender mesa-libGLU
-RUN pip3 install --upgrade pip
-RUN pip3 install -r requirements.txt
-RUN yum clean all
-RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
-systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-rm -f /lib/systemd/system/multi-user.target.wants/*;\
-rm -f /etc/systemd/system/.wants/;\
-rm -f /lib/systemd/system/local-fs.target.wants/*; \
-rm -f /lib/systemd/system/sockets.target.wants/udev; \
-rm -f /lib/systemd/system/sockets.target.wants/initctl; \
-rm -f /lib/systemd/system/basic.target.wants/*;\
-rm -f /lib/systemd/system/anaconda.target.wants/*;
-RUN yum remove -y  gcc-c++ cmake python3-devel
-VOLUME [ "/sys/fs/cgroup" ]
-CMD ["/usr/sbin/init"]
+FROM fedora:34
+
+ARG OPENCV_VERSION
+
+WORKDIR /opt/build
+
+RUN set -ex \
+    && dnf -q install -y \
+        gcc gcc-c++ \
+        make cmake \
+        wget unzip \
+        hdf5 \
+        libjpeg-turbo libjpeg-turbo-devel \
+        libpng libpng-devel \
+        libtiff libtiff-devel \
+        libwebp libwebp-devel \
+        openjpeg2 openjpeg2-devel \
+        tbb tbb-devel \
+        eigen3 \
+        openblas openblas-devel \
+        protobuf protobuf-devel \
+        tesseract tesseract-langpack-por tesseract-devel \
+        python3-numpy python3-devel \
+        python3 \
+        kernel-headers \
+   && dnf -q clean all
+RUN dnf -q install -y python3-pip
+ADD . /opt/build
+RUN pip install -r requirements.txt
+RUN dnf -q remove -y \
+        gcc gcc-c++ \
+        make cmake \
+        libjpeg-turbo-devel \
+        libpng-devel \
+        libtiff-devel \
+        libwebp-devel \
+        openjpeg2-devel \
+        tbb-devel \
+        protobuf-devel \
+        tesseract-devel \
+        python3-devel \
+        kernel-headers \
