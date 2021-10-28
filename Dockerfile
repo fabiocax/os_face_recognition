@@ -39,5 +39,5 @@ RUN dnf -q remove -y \
         protobuf-devel \
         tesseract-devel \
         python3-devel \
-        kernel-headers \
+        kernel-headers
  RUN dnf  install -y python3-devel make libXext libSM libXrender mesa-libGLU
