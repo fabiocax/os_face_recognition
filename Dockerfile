@@ -40,4 +40,4 @@ RUN dnf -q remove -y \
         tesseract-devel \
         python3-devel \
         kernel-headers
- RUN dnf  install -y python3-devel make libXext libSM libXrender mesa-libGLU
+ RUN dnf  install -y  libXext libSM libXrender mesa-libGLU
